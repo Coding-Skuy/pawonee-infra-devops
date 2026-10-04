@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16.4
+    environment:
+      POSTGRES_DB: pawonee
+      POSTGRES_USER: pawonee
+      POSTGRES_PASSWORD: pawonee
+    ports:
+      - "5432:5432"
+    volumes:
+      - pawonee-db:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ../../pawonee-backend-service
+    environment:
+      DATABASE_URL: postgres://pawonee:pawonee@db:5432/pawonee
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  pipeline:
+    build:
+      context: ../../pawonee-data-pipeline
+    environment:
+      DATABASE_URL: postgres://pawonee:pawonee@db:5432/pawonee
+    depends_on:
+      - db
+      - backend
+
+volumes:
+  pawonee-db:

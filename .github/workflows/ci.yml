@@ -1,0 +1,29 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  bank-resep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Coding-Skuy/pawonee-ai-models
+          path: ai-models
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.7"
+      - run: pip install -r ai-models/eval/requirements.txt
+      - run: python ai-models/eval/evaluate.py
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: Coding-Skuy/pawonee-backend-service
+          path: backend
+      - uses: dtolnay/rust-toolchain@1.82.0
+      - run: cargo test --manifest-path backend/Cargo.toml

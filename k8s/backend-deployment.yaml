@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pawonee-backend
+  labels:
+    app: pawonee-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pawonee-backend
+  template:
+    metadata:
+      labels:
+        app: pawonee-backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/coding-skuy/pawonee-backend-service:0.1.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: pawonee-db
+                  key: url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pawonee-backend
+spec:
+  selector:
+    app: pawonee-backend
+  ports:
+    - port: 80
+      targetPort: 8080
